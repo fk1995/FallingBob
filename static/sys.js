@@ -7,9 +7,12 @@ var KEYRIGHT = 39;
 var KEYDOWN  = 40;
 var KEYSPACE = 32;
 var MAXSPEED= -4;
+var MAXHORIZONTALSPEED = 10;
 var MAXSCROLLSPEED = 7;
 var MAXGRAVITY = 2;
-var PLATFORMS = ["normal","bouncing"];
+var BELTSPEED = 3;
+var PLATFORMS = ["normal","bouncing","rolling","normal","bouncing"];
+
 
 function init() {
     // create stage object. It will be the closure where we set our other objects.
@@ -17,13 +20,12 @@ function init() {
     var SCROLLSPEED = 4;
     var GRAVITY = 1;
 
-
     var stage = new createjs.Stage("Canvas");
     var move;
     // set ticker function
     createjs.Ticker.addEventListener("tick", handleTick);
-    createjs.Ticker.interval = 20;
-    var initial_pos = [480*Math.random()+50,300];
+    createjs.Ticker.framerate = 60;
+    var initial_pos = [480 * Math.random()+50,300];
 
     var ball = new Ball(initial_pos[0],initial_pos[1]);
     var platforms = [];
@@ -51,8 +53,8 @@ function init() {
     var background_spsheet = new createjs.SpriteSheet(background_data);
     var background1 = new createjs.Sprite(background_spsheet);
     var background2 = new createjs.Sprite(background_spsheet);
-    stage.addChild(background1);
-    stage.addChild(background2);
+    //stage.addChild(background1);
+    //stage.addChild(background2);
     stage.addChild(score_text);
     stage.addChild(difficulty_text);
     function handleTick(event) {
@@ -61,27 +63,34 @@ function init() {
         this.onkeydown = move;
         this.onkeypress = jump;
         if (!GAMEOVER) {
+            stage.addChild(ball.image);
             if (ball.platform == null) {
-                if (ball.speed[1] == 0) {
-                    ball.speed[1] = -2;
-                }
                 if (ball.speed[1] > MAXSPEED) {
                     ball.speed[1] -= GRAVITY;
+                }
+                else{
+                    ball.speed[1] = MAXSPEED;
                 }
                 ball.image.y -= ball.speed[1];
             }
             else {
-
                 if (ball.speed[1] < 0) {
                     ball.speed[1] = 0;
                 }
                 if (ball.image.x < ball.platform.image.x - 18 ||
                     ball.image.x > ball.platform.image.x + 58
                 ) {
+                    if (ball.platform.kind == "rolling"){
+                        //ball.acc[0] -= 1;
+                        ball.speed[0] -= BELTSPEED;
+                    }
                     ball.platform = null;
                     ball.speed[1] = 0;
                 }
             }
+            //if (ball.speed[0] > -MAXHORIZONTALSPEED && ball.speed[0] < MAXHORIZONTALSPEED) {
+            //    ball.speed[0] += ball.acc[0];
+           // }
             ball.image.x += ball.speed[0];
             if (ball.image.x < -10) {
                 ball.image.x = 630;
@@ -122,19 +131,22 @@ function init() {
 
                     switch (platform.kind){
                         case "normal":
+                            //ball.speed[0] = 0;
                             break;
                         case "bouncing":
                             ball.image.y = ball.platform.image.y - 20;
                             ball.speed[1] = 13.5;
                             ball.platform = null;
                             break;
-
+                        case "rolling":
+                            //ball.acc[0] = 1;
+                            ball.speed[0] += BELTSPEED;
+                            break;
                     }
-
                 }
             }
 
-            stage.addChild(ball.image);
+
 
             if (ball.platform != null) {
                 ball.image.y = ball.platform.image.y - 20;
@@ -156,7 +168,6 @@ function init() {
                 deathnote.x = 320 - 75;
                 deathnote.y = 240 - 15;
                 stage.addChild(deathnote);
-                stage.update();
                 var retry = new createjs.Text("Retry","20px Arial","purple");
                 retry.x = 320 - 25;
                 retry.y = 240 + 45;
@@ -174,13 +185,15 @@ function init() {
             // decide the direction of movement
             case (KEYLEFT):
                 if (!ball.moving) {
-                    ball.speed[0] = -5;
+                    ball.speed[0] -= 5;
+                    //ball.acc[0] = -1;
                     ball.moving = "l";
                 }
                 break;
             case (KEYRIGHT):
                 if (!ball.moving) {
-                    ball.speed[0] = 5;
+                    ball.speed[0] += 5;
+                   // ball.acc[0] = 1;
                     ball.moving = "r";
                 }
                 break;
@@ -194,6 +207,9 @@ function init() {
             case (KEYSPACE):
                 if (ball.platform != null) {
                     ball.speed[1] = 14;
+                    if (ball.platform.kind == "rolling"){
+                        ball.speed[0] -= BELTSPEED;
+                    }
                     ball.platform = null;
                 }
                 break;
@@ -205,7 +221,8 @@ function init() {
             // decide the direction of movement
             case (KEYLEFT):
                 if (ball.moving == "l") {
-                    ball.speed[0] = 0;
+                    ball.speed[0] += 5;
+                    //ball.acc[0] -= 5;
                     ball.moving = false;
                     this.onkeydown = move;
                     this.onkeyup = null;
@@ -213,7 +230,8 @@ function init() {
                 break;
             case (KEYRIGHT):
                 if (ball.moving == "r") {
-                    ball.speed[0] = 0;
+                    ball.speed[0] -= 5;
+                    //ball.acc[0] += 5;
                     ball.moving = false;
                     this.onkeydown = move;
                     this.onkeyup = null;
