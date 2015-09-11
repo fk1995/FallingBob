@@ -37,7 +37,7 @@ Platform = function(x,y,type){
     this.y = y;
     this.speed = 0;
     this.range = 0;
-
+    this.counter = 0;
 };
 
 Platform.size = [60,10];

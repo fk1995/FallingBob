@@ -11,7 +11,7 @@ var MAXHORIZONTALSPEED = 10;
 var MAXSCROLLSPEED = 7;
 var MAXGRAVITY = 2;
 var BELTSPEED = 3;
-var PLATFORMS = ["normal","bouncing","rolling","normal","bouncing","rovering"];
+var PLATFORMS = ["normal","bouncing","rolling","normal","bouncing","rovering","transient"];
 var CANVASSIZE = [640,600];
 
 
@@ -26,8 +26,7 @@ function init() {
     // set ticker function
     createjs.Ticker.addEventListener("tick", handleTick);
     createjs.Ticker.framerate = 60;
-    var initial_pos = [CANVASSIZE[0] * Math.random()+50,300];
-
+    var initial_pos = [(CANVASSIZE[0]-50) * Math.random(),300];
     var ball = new Ball(initial_pos[0],initial_pos[1]);
     var platforms = [];
     platforms.push(new Platform(initial_pos[0]+Ball.size[0]/2-Platform.size[0]/2,320,"normal",platforms.length));
@@ -167,6 +166,17 @@ function init() {
             if (ball.platform != null) {
                 ball.image.y = ball.platform.image.y - Ball.size[1];
                 ball.image.x += ball.platform.speed;
+                if (ball.platform.kind == "transient"){
+                    ball.platform.counter += 1;
+                    ball.platform.image.alpha -= 1.0/20;
+                    if (ball.platform.counter == 20){
+                        ball.platform.image.alpha = 0;
+
+                        var pos = platforms.indexOf(ball.platform);
+                        platforms.splice(pos,1);
+                        ball.platform = null;
+                    }
+                }
             }
 
             //background move
