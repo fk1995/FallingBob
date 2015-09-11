@@ -15,9 +15,10 @@ Ball = function (x,y) {
     this.speed = [0,0];
     this.acc = [0,0];
     this.platform = null;
+    this.lastPlatform = null;
     this.moving = false;
 };
-
+Ball.size = [20,20];
 
 var Platform;
 Platform = function(x,y,type){
@@ -32,5 +33,11 @@ Platform = function(x,y,type){
     this.image = new createjs.Sprite(this.spritesheet);
     this.image.x = x;
     this.image.y = y;
+    this.x = x;
+    this.y = y;
+    this.speed = 0;
+    this.range = 0;
 
 };
+
+Platform.size = [60,10];

@@ -11,7 +11,8 @@ var MAXHORIZONTALSPEED = 10;
 var MAXSCROLLSPEED = 7;
 var MAXGRAVITY = 2;
 var BELTSPEED = 3;
-var PLATFORMS = ["normal","bouncing","rolling","normal","bouncing"];
+var PLATFORMS = ["normal","bouncing","rolling","normal","bouncing","rovering"];
+var CANVASSIZE = [640,600];
 
 
 function init() {
@@ -25,14 +26,14 @@ function init() {
     // set ticker function
     createjs.Ticker.addEventListener("tick", handleTick);
     createjs.Ticker.framerate = 60;
-    var initial_pos = [480 * Math.random()+50,300];
+    var initial_pos = [CANVASSIZE[0] * Math.random()+50,300];
 
     var ball = new Ball(initial_pos[0],initial_pos[1]);
     var platforms = [];
-
-    platforms.push(new Platform(initial_pos[0]-20,320,"normal",platforms.length));
+    platforms.push(new Platform(initial_pos[0]+Ball.size[0]/2-Platform.size[0]/2,320,"normal",platforms.length));
     platforms.push(new Platform(Math.random()* 580,400,"normal",platforms.length));
     ball.platform = platforms[0];
+    ball.lastPlatform = platforms[0];
 
     var score = 0;
     var score_text = new createjs.Text(score.toString(),"40px Arial","yellow");
@@ -41,7 +42,7 @@ function init() {
     var difficulty = 1;
     var difficulty_text = new createjs.Text("Level:"+difficulty.toString(),"40px Arial","blue");
     var difficulty_text_width = difficulty_text.getMeasuredWidth();
-    difficulty_text.x = 640 - difficulty_text_width;
+    difficulty_text.x = CANVASSIZE[0] - difficulty_text_width;
 
 
     //background
@@ -77,8 +78,8 @@ function init() {
                 if (ball.speed[1] < 0) {
                     ball.speed[1] = 0;
                 }
-                if (ball.image.x < ball.platform.image.x - 18 ||
-                    ball.image.x > ball.platform.image.x + 58
+                if (ball.image.x < ball.platform.image.x - Ball.size[0] + 2 ||
+                    ball.image.x > ball.platform.image.x + Platform.size[0] -2
                 ) {
                     if (ball.platform.kind == "rolling"){
                         //ball.acc[0] -= 1;
@@ -102,7 +103,11 @@ function init() {
 
             var tick = createjs.Ticker.getTicks();
             if (tick % 18 == 1) {
-                platforms.push(new Platform(Math.random() * 580, 470, PLATFORMS[Math.floor(Math.random()*PLATFORMS.length)]));
+                platforms.push(new Platform(Math.random() * (CANVASSIZE[0]-Platform.size[0]), CANVASSIZE[1], PLATFORMS[Math.floor(Math.random()*PLATFORMS.length)]));
+                if (platforms.slice(-1)[0].kind == "rovering"){
+                    platforms.slice(-1)[0].speed = 3 + Math.floor(Math.random() * 3);
+                    platforms.slice(-1)[0].range = 70 + Math.floor(Math.random() * 60);
+                }
             }
             for (var p in platforms) {
                 var platform = platforms[p];
@@ -111,12 +116,23 @@ function init() {
                     continue;
                 }
                 platform.image.y -= SCROLLSPEED;
+                if (platform.kind == "rovering"){
+                    if (platform.image.x<0 || platform.image.x> CANVASSIZE[0] ||
+                        platform.image.x < platform.x - platform.range/2 || platform.image.x > platform.x + platform.range/2){
+                        platform.speed *= -1;
+                    }
+                    platform.image.x += platform.speed;
+
+                }
                 stage.addChild(platform.image);
-                if (ball.platform == null && ball.image.x + 18 > platform.image.x && ball.image.x + 2 < platform.image.x + 60
-                    && ball.image.y + 20 >= platform.image.y && ball.image.y <= platform.image.y + 5
+                if (ball.platform == null && ball.image.x + Ball.size[0] - 2 > platform.image.x && ball.image.x + 2 < platform.image.x + Platform.size[0]
+                    && ball.image.y + Ball.size[1] >= platform.image.y && ball.image.y <= platform.image.y + 5
                 ) {
                     ball.platform = platform;
-                    score += 1;
+                    if (platform != ball.lastPlatform){
+                        score += 1;
+                    }
+                    ball.lastPlatform = platform;
                     if (score % 5 == 3){
                         GRAVITY += 0.02;
                         if (SCROLLSPEED < MAXSCROLLSPEED) {
@@ -125,7 +141,7 @@ function init() {
                         difficulty += 1;
                         difficulty_text.text = "Level:" + difficulty.toString();
                         difficulty_text_width = difficulty_text.getMeasuredWidth();
-                        difficulty_text.x = 640 - difficulty_text_width;
+                        difficulty_text.x = CANVASSIZE[0] - difficulty_text_width;
                     }
                     score_text.text = score.toString();
 
@@ -134,7 +150,7 @@ function init() {
                             //ball.speed[0] = 0;
                             break;
                         case "bouncing":
-                            ball.image.y = ball.platform.image.y - 20;
+                            ball.image.y = ball.platform.image.y - Ball.size[1];
                             ball.speed[1] = 13.5;
                             ball.platform = null;
                             break;
@@ -149,12 +165,13 @@ function init() {
 
 
             if (ball.platform != null) {
-                ball.image.y = ball.platform.image.y - 20;
+                ball.image.y = ball.platform.image.y - Ball.size[1];
+                ball.image.x += ball.platform.speed;
             }
 
             //background move
-            if (background2.y + background1.spriteSheet.getFrameBounds(0).height <= 480){
-                background1.y = 480 - background1.spriteSheet.getFrameBounds(0).height;
+            if (background2.y + background1.spriteSheet.getFrameBounds(0).height <= CANVASSIZE[1]){
+                background1.y = CANVASSIZE[1] - background1.spriteSheet.getFrameBounds(0).height;
             }
 
             background1.y -= SCROLLSPEED;
@@ -162,7 +179,7 @@ function init() {
             stage.update();
         }
         if (!GAMEOVER){
-            if (ball.image.y < -20 || ball.image.y > 480){
+            if (ball.image.y < -Ball.size[1] || ball.image.y > CANVASSIZE[1]){
                 GAMEOVER = true;
                 var deathnote = new createjs.Text("Game Over","30px Arial","#ff0000");
                 deathnote.x = 320 - 75;
