@@ -31,6 +31,9 @@ Platform = function(x,y,type){
 
     this.spritesheet = new createjs.SpriteSheet(data);
     this.image = new createjs.Sprite(this.spritesheet);
+    if (this.kind == "invisible"){
+        this.image.alpha = 0.1;
+    }
     this.image.x = x;
     this.image.y = y;
     this.x = x;

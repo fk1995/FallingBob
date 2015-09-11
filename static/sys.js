@@ -11,7 +11,7 @@ var MAXHORIZONTALSPEED = 10;
 var MAXSCROLLSPEED = 7;
 var MAXGRAVITY = 2;
 var BELTSPEED = 3;
-var PLATFORMS = ["normal","bouncing","rolling","normal","bouncing","rovering","transient"];
+var PLATFORMS = ["normal","bouncing","rolling","normal","bouncing","rovering","transient","invisible"];
 var CANVASSIZE = [640,600];
 
 
@@ -176,6 +176,10 @@ function init() {
                         platforms.splice(pos,1);
                         ball.platform = null;
                     }
+                }
+                if (ball.platform.kind == "invisible"){
+                    ball.platform.counter += 1;
+                    ball.platform.image.alpha += 1.0/20;
                 }
             }
 
