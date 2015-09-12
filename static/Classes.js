@@ -65,12 +65,20 @@ Ball = function (x,y) {
 };
 
 Ball.prototype.cancelStatus = function(){
-    switch (this.status){
-        case "big":
-            this.image.scaleX /= 1.35;
-            this.image.scaleY /= 1.35;
+    switch (this.status.kind){
+        case "burger":
+            createjs.Tween.get(this.image).to({scaleX:this.image.scaleX/1.35,scaleY:this.image.scaleY/1.35},300);
             Ball.size[0] = 29;
             Ball.size[1] = 35;
+            this.status = null;
+            this.counter = 0;
+            break;
+        case "shoes":
+            Ball.speed = 5;
+            if (this.moving){
+                this.speed[0] = Math.abs(this.speed[0]) / this.speed[0] * Ball.speed;
+            }
+            this.counter = 0;
             break;
     }
 }

@@ -12,7 +12,7 @@ var MAXSCROLLSPEED = 7;
 var MAXGRAVITY = 2;
 var BELTSPEED = 3;
 var PLATFORMS = ["normal","bouncing","rolling","normal","bouncing","rovering","transient","invisible","spike"];
-var ITEMS= ["burger"];
+var ITEMS= ["burger","shoes"];
 var CANVASSIZE = [640,600];
 
 
@@ -32,6 +32,7 @@ function init() {
     var platforms = [];
     var items = [];
     Ball.size = [29,35];
+    Ball.speed = 5;
     platforms.push(new Platform(initial_pos[0]+Ball.size[0]/2-Platform.size[0]/2,320,"normal",platforms.length));
     platforms.push(new Platform(Math.random()* 580,420,"normal",platforms.length));
 
@@ -62,6 +63,15 @@ function init() {
     stage.addChild(background2);
     stage.addChild(score_text);
     stage.addChild(difficulty_text);
+    var itemback_data = {
+        images: ["static/item_back.png"],
+        frames: {width:40, height:40}
+    };
+    var itemback_spsheet = new createjs.SpriteSheet(itemback_data);
+    var itemback = new createjs.Sprite(itemback_spsheet);
+    itemback.regY = 40;
+    itemback.y = CANVASSIZE[1];
+    stage.addChild(itemback);
 	health_text.x = (CANVASSIZE[0] / 2) - 70;
 	stage.addChild(health_text);
     for (var p in platforms){
@@ -73,10 +83,11 @@ function init() {
         stage.addChild(ball.image);
         if (ball.counter != 0){
             ball.counter--;
-            console.log(ball.counter);
             if (ball.counter == 0){
                 ball.cancelStatus();
+                stage.removeChild(ball.status.image);
             }
+
         }
         this.onkeydown = move;
         this.onkeypress = jump;
@@ -123,8 +134,8 @@ function init() {
                 platforms.push(new Platform(Math.random() * (CANVASSIZE[0]-Platform.size[0]), CANVASSIZE[1],
                     PLATFORMS[Math.floor(Math.random()*PLATFORMS.length)]));
                 stage.addChild(platforms.slice(-1)[0].image);
-                if (Math.random() < 0.5){
-                    items.push(new Item(platforms.slice(-1)[0],"burger"));
+                if ( platforms.slice(-1)[0].kind != "invisible" && Math.random() < 0.5){
+                    items.push(new Item(platforms.slice(-1)[0],ITEMS[Math.floor(Math.random()*ITEMS.length)]));
                     stage.addChild(items.slice(-1)[0].image);
                 }
                 if (platforms.slice(-1)[0].kind == "rovering"){
@@ -190,6 +201,7 @@ function init() {
                             ball.image.y = ball.platform.image.y - Ball.size[1];
                             ball.speed[1] = 13.5;
                             ball.platform = null;
+                            ball.image.gotoAndPlay("flying");
                             break;
                         case "rolling":
                             //ball.acc[0] = 1;
@@ -206,15 +218,30 @@ function init() {
                 ) {
                     items.splice(i - 1,1);
                     stage.removeChild(item.image);
+                    if (ball.status != null && item.kind != ball.status.kind){
+                        ball.cancelStatus();
+                    }
+                    ball.status = item;
+                    ball.status.image.x = 20;
+                    ball.status.image.y = CANVASSIZE[1] - 33;
+                    stage.addChild(ball.status.image);
                     switch (item.kind){
                         case "burger":
                             if (ball.image.scaleX == 1 || ball.image.scaleX == -1) {
-                                ball.image.scaleX *= 1.35;
-                                ball.image.scaleY *= 1.35;
+                                createjs.Tween.get(ball.image).to({scaleX:ball.image.scaleX*1.35,scaleY:ball.image.scaleY*1.35},300);
+                                //ball.image.scaleX *= 1.35;
+                                //ball.image.scaleY *= 1.35;
                                 Ball.size[0] = 29 * 1.35;
                                 Ball.size[1] = 35 * 1.35;
                             }
-                            ball.status = "big";
+
+                            ball.counter = 200;
+                            break;
+                        case "shoes":
+                            Ball.speed = 8;
+                            if (ball.moving){
+                                ball.speed[0] = Math.abs(ball.speed[0]) / ball.speed[0] * Ball.speed;
+                            }
                             ball.counter = 200;
                             break;
                     }
@@ -264,11 +291,23 @@ function init() {
                 background1.y = CANVASSIZE[1] - background1.spriteSheet.getFrameBounds(0).height;
             }
 
+            if (ball.face == "l" && ball.image.scaleX > 0){
+                ball.image.scaleX *= -1;
+            }
+            if (ball.face == "r" && ball.image.scaleX < 0){
+                ball.image.scaleX *= -1;
+            }
+
             background1.y -= SCROLLSPEED;
             background2.y = background1.y +background1.spriteSheet.getFrameBounds(0).height;
             stage.setChildIndex(score_text,stage.getNumChildren()-1);
-            stage.setChildIndex(difficulty_text,stage.getNumChildren()-1)
-            stage.setChildIndex(health_text,stage.getNumChildren()-1)
+            stage.setChildIndex(difficulty_text,stage.getNumChildren()-1);
+            stage.setChildIndex(health_text,stage.getNumChildren()-1);
+            stage.setChildIndex(itemback,stage.getNumChildren()-1);
+            if (ball.status != null) {
+                stage.setChildIndex(ball.status.image, stage.getNumChildren() - 1);
+                ball.status.image.alpha = Math.sin(ball.counter / 200.0 * Math.PI / 2);
+            }
             stage.update();
         }
         if (!GAMEOVER){
@@ -295,7 +334,7 @@ function init() {
             // decide the direction of movement
             case (KEYLEFT):
                 if (!ball.moving) {
-                    ball.speed[0] -= 5;
+                    ball.speed[0] -= Ball.speed;
                     //ball.acc[0] = -1;
                     ball.moving = "l";
                     if (ball.image.scaleX > 0){
@@ -309,7 +348,7 @@ function init() {
                 break;
             case (KEYRIGHT):
                 if (!ball.moving) {
-                    ball.speed[0] += 5;
+                    ball.speed[0] += Ball.speed;
                    // ball.acc[0] = 1;
                     ball.moving = "r";
                     if (ball.image.scaleX < 0){
@@ -346,7 +385,7 @@ function init() {
             // decide the direction of movement
             case (KEYLEFT):
                 if (ball.moving == "l") {
-                    ball.speed[0] += 5;
+                    ball.speed[0] += Ball.speed;
                     //ball.acc[0] -= 5;
                     ball.moving = false;
                     if (ball.platform) {
@@ -361,7 +400,7 @@ function init() {
                 break;
             case (KEYRIGHT):
                 if (ball.moving == "r") {
-                    ball.speed[0] -= 5;
+                    ball.speed[0] -= Ball.speed;
                     //ball.acc[0] += 5;
                     ball.moving = false;
                     if (ball.platform) {
