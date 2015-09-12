@@ -47,7 +47,8 @@ function init() {
     var difficulty_text_width = difficulty_text.getMeasuredWidth();
     difficulty_text.x = CANVASSIZE[0] - difficulty_text_width;
 
-
+    var myHealth = Math.floor(ball.health);
+    var health_text = new createjs.Text("Health:" + myHealth.toString(), "25px Comic Sans MS", "red");
     //background
     var background_data = {
         images: ["static/background13.jpg"],
@@ -227,6 +228,23 @@ function init() {
             if (ball.platform != null) {
                 ball.image.y = ball.platform.image.y - Ball.size[1];
                 ball.image.x += ball.platform.speed;
+                if (ball.platform.kind == "invisible"){
+                    ball.platform.counter += 1;
+                    ball.platform.image.alpha += 1.0/20;
+                }
+                if (ball.platform.kind == "spike") {
+                    ball.health -= 1;
+                    myHealth = Math.floor(ball.health);
+                    health_text.text = "Health:" + myHealth.toString();
+
+                }
+                else{
+                    if (ball.health > 0 && ball.health < 100){
+                        ball.health += 0.25;
+                        myHealth = Math.floor(ball.health);
+                        health_text.text = "Health:" + myHealth.toString();
+                    }
+                }
                 if (ball.platform.kind == "transient"){
                     ball.platform.counter += 1;
                     ball.platform.image.alpha -= 1.0/20;
@@ -239,10 +257,6 @@ function init() {
                         ball.image.gotoAndPlay("flying");
                     }
                 }
-                if (ball.platform.kind == "invisible"){
-                    ball.platform.counter += 1;
-                    ball.platform.image.alpha += 1.0/20;
-                }
             }
 
             //background move
@@ -253,11 +267,12 @@ function init() {
             background1.y -= SCROLLSPEED;
             background2.y = background1.y +background1.spriteSheet.getFrameBounds(0).height;
             stage.setChildIndex(score_text,stage.getNumChildren()-1);
-            stage.setChildIndex(difficulty_text,stage.getNumChildren()-1);
+            stage.setChildIndex(difficulty_text,stage.getNumChildren()-1)
+            stage.setChildIndex(health_text,stage.getNumChildren()-1)
             stage.update();
         }
         if (!GAMEOVER){
-            if (ball.image.y < -Ball.size[1] || ball.image.y > CANVASSIZE[1]){
+            if (ball.health <= 0 || ball.image.y < -Ball.size[1] || ball.image.y > CANVASSIZE[1]){
                 GAMEOVER = true;
                 var deathnote = new createjs.Text("Game Over","30px Arial","#ff0000");
                 deathnote.x = 320 - 75;
