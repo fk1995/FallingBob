@@ -81,6 +81,15 @@ function init() {
     for (var p in platforms){
         stage.addChild(platforms[p].image);
     }
+
+    var pause_button_data = {
+        images: ["static/button_pause.png","static/button_play"],
+        frames: {width:34, height:31}
+    }
+    var pause_button_spsheet = new createjs.SpriteSheet(pause_button_data);
+    var pause_button = new createjs.Sprite(pause_button_spsheet);
+
+
     function handleTick(event) {
         // this function is called every tick(every frame loop)
         // main loop
