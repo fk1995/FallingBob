@@ -46,8 +46,8 @@ function init() {
 
     //background
     var background_data = {
-        images: ["static/background.jpg"],
-        frames: {width:640, height:800}
+        images: ["static/background13.jpg"],
+        frames: {width:640, height:960}
     };
 
     var background_spsheet = new createjs.SpriteSheet(background_data);
@@ -77,8 +77,8 @@ function init() {
                 if (ball.speed[1] < 0) {
                     ball.speed[1] = 0;
                 }
-                if (ball.image.x < ball.platform.image.x - Ball.size[0] + 2 ||
-                    ball.image.x > ball.platform.image.x + Platform.size[0] -2
+                if (ball.image.x < ball.platform.image.x - Ball.size[0]/2 + 7 ||
+                    ball.image.x > ball.platform.image.x + Platform.size[0] -7 + Ball.size[0]/2
                 ) {
                     if (ball.platform.kind == "rolling"){
                         //ball.acc[0] -= 1;
@@ -124,7 +124,7 @@ function init() {
 
                 }
                 stage.addChild(platform.image);
-                if (ball.platform == null && ball.image.x + Ball.size[0] - 2 > platform.image.x && ball.image.x + 2 < platform.image.x + Platform.size[0]
+                if (ball.platform == null && ball.image.x + Ball.size[0]/2 - 12 > platform.image.x && ball.image.x + 12 < platform.image.x + Platform.size[0] + Ball.size[0]/2
                     && ball.image.y + Ball.size[1] >= platform.image.y && ball.image.y <= platform.image.y + 5
                 ) {
                     ball.platform = platform;
@@ -229,6 +229,9 @@ function init() {
                     ball.speed[0] -= 5;
                     //ball.acc[0] = -1;
                     ball.moving = "l";
+                    ball.image.scaleX = -1;
+                    ball.image.gotoAndPlay("running");
+                    ball.face = "l";
                 }
                 break;
             case (KEYRIGHT):
@@ -236,6 +239,9 @@ function init() {
                     ball.speed[0] += 5;
                    // ball.acc[0] = 1;
                     ball.moving = "r";
+                    ball.image.scaleX = 1;
+                    ball.image.gotoAndPlay("running");
+                    ball.face = "r";
                 }
                 break;
         }
@@ -265,6 +271,7 @@ function init() {
                     ball.speed[0] += 5;
                     //ball.acc[0] -= 5;
                     ball.moving = false;
+                    ball.image.gotoAndPlay("standing");
                     this.onkeydown = move;
                     this.onkeyup = null;
                 }
@@ -274,6 +281,7 @@ function init() {
                     ball.speed[0] -= 5;
                     //ball.acc[0] += 5;
                     ball.moving = false;
+                    ball.image.gotoAndPlay("standing");
                     this.onkeydown = move;
                     this.onkeyup = null;
                 }

@@ -16,12 +16,26 @@ Ball = function (x,y) {
             [217,11,29,35],
             [253,11,29,35],
             [292,11,29,35],
-
+            [7,115,31,37],
+            [47,117,28,38],
+            [88,116,24,36],
+            [125,117,26,35],
+            [161,117,28,35],
+            [202,115,29,37],
+            [244,114,27,38],
+            [289,116,25,36],
+            [329,117,25,35],
+            [368,115,27,37]
 
         ],
         animations: {
             standing:{
                 frames:[0,1,2,3,4,5,6,7,8],
+                next:true,
+                speed:0.2
+            },
+            running:{
+                frames:[9,10,11,12,13,14,15,16,17],
                 next:true,
                 speed:0.2
             }
@@ -31,11 +45,13 @@ Ball = function (x,y) {
     this.image = new createjs.Sprite(this.spritesheet,"standing");
     this.image.x = x;
     this.image.y = y;
+    this.image.regX = 15;
     this.speed = [0,0];
     this.acc = [0,0];
     this.platform = null;
     this.lastPlatform = null;
     this.moving = false;
+    this.face = "r";
 };
 Ball.size = [29,35];
 
