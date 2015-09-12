@@ -11,7 +11,7 @@ var MAXHORIZONTALSPEED = 10;
 var MAXSCROLLSPEED = 7;
 var MAXGRAVITY = 2;
 var BELTSPEED = 3;
-var PLATFORMS = ["normal","bouncing","rolling","normal","bouncing","rovering","transient","invisible"];
+var PLATFORMS = ["normal","bouncing","rolling","normal","bouncing","rovering","transient","invisible","spike"];
 var CANVASSIZE = [640,600];
 
 

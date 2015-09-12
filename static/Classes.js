@@ -83,6 +83,7 @@ Platform = function(x,y,type){
     this.speed = 0;
     this.range = 0;
     this.counter = 0;
+ 	this.health = 100;
 };
 
 Platform.size = [60,10];
