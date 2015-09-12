@@ -40,16 +40,20 @@ function init() {
     ball.lastPlatform = platforms[0];
 
     var score = 0;
-    var score_text = new createjs.Text(score.toString(),"30px Comic Sans MS","black");
+    var score_text = new createjs.Text(score.toString(),"30px Courier New","#FE9A2E");
+   
+
     score_text.x = 10;
 
     var difficulty = 1;
-    var difficulty_text = new createjs.Text("Level:"+difficulty.toString(),"30px Comic Sans MS","black");
+    var difficulty_text = new createjs.Text("Level:"+difficulty.toString(),"30px Courier New","#FE9A2E");
+
     var difficulty_text_width = difficulty_text.getMeasuredWidth();
     difficulty_text.x = CANVASSIZE[0] - difficulty_text_width;
 
     var myHealth = Math.floor(ball.health);
     var health_text = new createjs.Text("Health:" + myHealth.toString(), "25px Comic Sans MS", "red");
+    
     //background
     var background_data = {
         images: ["static/background13.jpg"],
@@ -313,7 +317,7 @@ function init() {
         if (!GAMEOVER){
             if (ball.health <= 0 || ball.image.y < -Ball.size[1] || ball.image.y > CANVASSIZE[1]){
                 GAMEOVER = true;
-                var deathnote = new createjs.Text("Game Over","30px Arial","#ff0000");
+                var deathnote = new createjs.Text("Game Over","30px Geogria","#ff0000");
                 deathnote.x = 320 - 75;
                 deathnote.y = 240 - 15;
                 stage.addChild(deathnote);
