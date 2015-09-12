@@ -59,8 +59,21 @@ Ball = function (x,y) {
     this.lastPlatform = null;
     this.moving = false;
     this.face = "r";
+    this.status = null;
+    this.counter = 0;
 };
-Ball.size = [29,35];
+
+Ball.prototype.cancelStatus = function(){
+    switch (this.status){
+        case "big":
+            this.image.scaleX /= 1.35;
+            this.image.scaleY /= 1.35;
+            Ball.size[0] = 29;
+            Ball.size[1] = 35;
+            break;
+    }
+}
+
 
 var Platform;
 Platform = function(x,y,type){
@@ -87,3 +100,20 @@ Platform = function(x,y,type){
 };
 
 Platform.size = [60,10];
+
+var Item;
+Item = function(platform,type){
+    this.type = "Item";
+    this.kind = type;
+    var data = {
+        images: ["static/item-" + this.kind + ".png"],
+        frames: {width:30, height:28}
+    };
+    this.spritesheet = new createjs.SpriteSheet(data);
+    this.image = new createjs.Sprite(this.spritesheet);
+    this.image.regX = data.frames.width /2;
+    this.platform = platform;
+    this.image.x = this.platform.image.x + Platform.size[0]/2;
+};
+
+Item.size = [30,28];
