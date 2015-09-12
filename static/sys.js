@@ -35,11 +35,11 @@ function init() {
     ball.lastPlatform = platforms[0];
 
     var score = 0;
-    var score_text = new createjs.Text(score.toString(),"40px Arial","yellow");
+    var score_text = new createjs.Text(score.toString(),"30px Comic Sans MS","black");
     score_text.x = 10;
 
     var difficulty = 1;
-    var difficulty_text = new createjs.Text("Level:"+difficulty.toString(),"40px Arial","blue");
+    var difficulty_text = new createjs.Text("Level:"+difficulty.toString(),"30px Comic Sans MS","black");
     var difficulty_text_width = difficulty_text.getMeasuredWidth();
     difficulty_text.x = CANVASSIZE[0] - difficulty_text_width;
 
@@ -47,23 +47,23 @@ function init() {
     //background
     var background_data = {
         images: ["static/background.jpg"],
-        frames: {width:640, height:640}
+        frames: {width:640, height:800}
     };
 
     var background_spsheet = new createjs.SpriteSheet(background_data);
     var background1 = new createjs.Sprite(background_spsheet);
     var background2 = new createjs.Sprite(background_spsheet);
-    //stage.addChild(background1);
-    //stage.addChild(background2);
+    stage.addChild(background1);
+    stage.addChild(background2);
     stage.addChild(score_text);
     stage.addChild(difficulty_text);
     function handleTick(event) {
         // this function is called every tick(every frame loop)
         // main loop
+        stage.addChild(ball.image);
         this.onkeydown = move;
         this.onkeypress = jump;
         if (!GAMEOVER) {
-            stage.addChild(ball.image);
             if (ball.platform == null) {
                 if (ball.speed[1] > MAXSPEED) {
                     ball.speed[1] -= GRAVITY;
@@ -101,7 +101,7 @@ function init() {
 
 
             var tick = createjs.Ticker.getTicks();
-            if (tick % 18 == 1) {
+            if (tick % 24 == 1) {
                 platforms.push(new Platform(Math.random() * (CANVASSIZE[0]-Platform.size[0]), CANVASSIZE[1], PLATFORMS[Math.floor(Math.random()*PLATFORMS.length)]));
                 if (platforms.slice(-1)[0].kind == "rovering"){
                     platforms.slice(-1)[0].speed = 3 + Math.floor(Math.random() * 3);
@@ -129,10 +129,16 @@ function init() {
                 ) {
                     ball.platform = platform;
                     if (platform != ball.lastPlatform){
-                        score += 1;
+                        switch (platform.kind){
+                            case "invisible":
+                                score += 2;
+                                break;
+                            default :
+                                score += 1;
+                                break;
+                        }
                     }
-                    ball.lastPlatform = platform;
-                    if (score % 5 == 3){
+                    if (score % 5 == 3 && platform != ball.lastPlatform){
                         GRAVITY += 0.02;
                         if (SCROLLSPEED < MAXSCROLLSPEED) {
                             SCROLLSPEED += 0.1;
@@ -142,6 +148,8 @@ function init() {
                         difficulty_text_width = difficulty_text.getMeasuredWidth();
                         difficulty_text.x = CANVASSIZE[0] - difficulty_text_width;
                     }
+
+                    ball.lastPlatform = platform;
                     score_text.text = score.toString();
 
                     switch (platform.kind){
@@ -190,6 +198,8 @@ function init() {
 
             background1.y -= SCROLLSPEED;
             background2.y = background1.y +background1.spriteSheet.getFrameBounds(0).height;
+            stage.setChildIndex(score_text,stage.getNumChildren()-1);
+            stage.setChildIndex(difficulty_text,stage.getNumChildren()-1);
             stage.update();
         }
         if (!GAMEOVER){
