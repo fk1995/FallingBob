@@ -85,6 +85,7 @@ function init() {
                         ball.speed[0] -= BELTSPEED;
                     }
                     ball.platform = null;
+                    ball.image.gotoAndPlay("flying");
                     ball.speed[1] = 0;
                 }
             }
@@ -151,10 +152,16 @@ function init() {
 
                     ball.lastPlatform = platform;
                     score_text.text = score.toString();
-
+                    if (ball.moving) {
+                        ball.image.gotoAndPlay("running");
+                    }
+                    else{
+                        ball.image.gotoAndPlay("standing");
+                    }
                     switch (platform.kind){
                         case "normal":
                             //ball.speed[0] = 0;
+
                             break;
                         case "bouncing":
                             ball.image.y = ball.platform.image.y - Ball.size[1];
@@ -183,6 +190,7 @@ function init() {
                         var pos = platforms.indexOf(ball.platform);
                         platforms.splice(pos,1);
                         ball.platform = null;
+                        ball.image.gotoAndPlay("flying");
                     }
                 }
                 if (ball.platform.kind == "invisible"){
@@ -230,7 +238,9 @@ function init() {
                     //ball.acc[0] = -1;
                     ball.moving = "l";
                     ball.image.scaleX = -1;
-                    ball.image.gotoAndPlay("running");
+                    if (ball.platform) {
+                        ball.image.gotoAndPlay("running");
+                    }
                     ball.face = "l";
                 }
                 break;
@@ -240,13 +250,15 @@ function init() {
                    // ball.acc[0] = 1;
                     ball.moving = "r";
                     ball.image.scaleX = 1;
-                    ball.image.gotoAndPlay("running");
+                    if (ball.platform) {
+                        ball.image.gotoAndPlay("running");
+                    }
                     ball.face = "r";
                 }
                 break;
         }
 
-    }
+    };
 
     function jump(e){
         switch (e.keyCode){
@@ -258,6 +270,7 @@ function init() {
                         ball.speed[0] -= BELTSPEED;
                     }
                     ball.platform = null;
+                    ball.image.gotoAndPlay("flying");
                 }
                 break;
         }
@@ -271,7 +284,12 @@ function init() {
                     ball.speed[0] += 5;
                     //ball.acc[0] -= 5;
                     ball.moving = false;
-                    ball.image.gotoAndPlay("standing");
+                    if (ball.platform) {
+                        ball.image.gotoAndPlay("standing");
+                    }
+                    else{
+                        ball.image.gotoAndPlay("flying");
+                    }
                     this.onkeydown = move;
                     this.onkeyup = null;
                 }
@@ -281,7 +299,12 @@ function init() {
                     ball.speed[0] -= 5;
                     //ball.acc[0] += 5;
                     ball.moving = false;
-                    ball.image.gotoAndPlay("standing");
+                    if (ball.platform) {
+                        ball.image.gotoAndPlay("standing");
+                    }
+                    else{
+                        ball.image.gotoAndPlay("flying");
+                    }
                     this.onkeydown = move;
                     this.onkeyup = null;
                 }
