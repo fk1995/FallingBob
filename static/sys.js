@@ -12,6 +12,7 @@ var MAXSCROLLSPEED = 7;
 var MAXGRAVITY = 2;
 var BELTSPEED = 3;
 var PLATFORMS = ["normal","bouncing","rolling","normal","bouncing","rovering","transient","invisible","spike"];
+var ITEMS= ["burger"];
 var CANVASSIZE = [640,600];
 
 
@@ -20,8 +21,8 @@ function init() {
     var GAMEOVER = false;
     var SCROLLSPEED = 4;
     var GRAVITY = 1;
-
     var stage = new createjs.Stage("Canvas");
+
     var move;
     // set ticker function
     createjs.Ticker.addEventListener("tick", handleTick);
@@ -29,8 +30,11 @@ function init() {
     var initial_pos = [(CANVASSIZE[0]-50) * Math.random(),300];
     var ball = new Ball(initial_pos[0],initial_pos[1]);
     var platforms = [];
+    var items = [];
+    Ball.size = [29,35];
     platforms.push(new Platform(initial_pos[0]+Ball.size[0]/2-Platform.size[0]/2,320,"normal",platforms.length));
-    platforms.push(new Platform(Math.random()* 580,400,"normal",platforms.length));
+    platforms.push(new Platform(Math.random()* 580,420,"normal",platforms.length));
+
     ball.platform = platforms[0];
     ball.lastPlatform = platforms[0];
 
@@ -60,11 +64,20 @@ function init() {
     stage.addChild(difficulty_text);
 	health_text.x = (CANVASSIZE[0] / 2) - 70;
 	stage.addChild(health_text);
-	
+    for (var p in platforms){
+        stage.addChild(platforms[p].image);
+    }
     function handleTick(event) {
         // this function is called every tick(every frame loop)
         // main loop
         stage.addChild(ball.image);
+        if (ball.counter != 0){
+            ball.counter--;
+            console.log(ball.counter);
+            if (ball.counter == 0){
+                ball.cancelStatus();
+            }
+        }
         this.onkeydown = move;
         this.onkeypress = jump;
         if (!GAMEOVER) {
@@ -106,7 +119,13 @@ function init() {
 
             var tick = createjs.Ticker.getTicks();
             if (tick % 24 == 1) {
-                platforms.push(new Platform(Math.random() * (CANVASSIZE[0]-Platform.size[0]), CANVASSIZE[1], PLATFORMS[Math.floor(Math.random()*PLATFORMS.length)]));
+                platforms.push(new Platform(Math.random() * (CANVASSIZE[0]-Platform.size[0]), CANVASSIZE[1],
+                    PLATFORMS[Math.floor(Math.random()*PLATFORMS.length)]));
+                stage.addChild(platforms.slice(-1)[0].image);
+                if (Math.random() < 0.5){
+                    items.push(new Item(platforms.slice(-1)[0],"burger"));
+                    stage.addChild(items.slice(-1)[0].image);
+                }
                 if (platforms.slice(-1)[0].kind == "rovering"){
                     platforms.slice(-1)[0].speed = 3 + Math.floor(Math.random() * 3);
                     platforms.slice(-1)[0].range = 70 + Math.floor(Math.random() * 60);
@@ -114,7 +133,7 @@ function init() {
             }
             for (var p in platforms) {
                 var platform = platforms[p];
-                if (platform.y < -10) {
+                if (platform.y < -15) {
                     platforms.splice(p, 1);
                     continue;
                 }
@@ -127,7 +146,7 @@ function init() {
                     platform.image.x += platform.speed;
 
                 }
-                stage.addChild(platform.image);
+
                 if (ball.platform == null && ball.image.x + Ball.size[0]/2 - 12 > platform.image.x && ball.image.x + 12 < platform.image.x + Platform.size[0] + Ball.size[0]/2
                     && ball.image.y + Ball.size[1] >= platform.image.y && ball.image.y <= platform.image.y + 5
                 ) {
@@ -173,7 +192,31 @@ function init() {
                 }
             }
 
+            for (var i = items.length; i > 0;i--){
+                var item = items[i-1];
+                if ( ball.image.x + Ball.size[0] > item.image.x && ball.image.x < item.image.x + Item.size[0]
+                    && ball.image.y + Ball.size[1] >= item.image.y && ball.image.y <= item.image.y + 5
+                ) {
+                    items.splice(i - 1,1);
+                    stage.removeChild(item.image);
+                    switch (item.kind){
+                        case "burger":
+                            if (ball.image.scaleX == 1 || ball.image.scaleX == -1) {
+                                ball.image.scaleX *= 1.35;
+                                ball.image.scaleY *= 1.35;
+                                Ball.size[0] = 29 * 1.35;
+                                Ball.size[1] = 35 * 1.35;
+                            }
+                            ball.status = "big";
+                            ball.counter = 200;
+                            break;
+                    }
+                    continue;
+                }
 
+                item.image.x = item.platform.image.x + Platform.size[0]/2;
+                item.image.y = item.platform.image.y - Item.size[1];
+            }
 
             if (ball.platform != null) {
                 ball.image.y = ball.platform.image.y - Ball.size[1];
@@ -248,8 +291,12 @@ function init() {
                     ball.speed[0] -= 5;
                     //ball.acc[0] = -1;
                     ball.moving = "l";
-                    ball.image.scaleX = -1;
-                    ball.image.gotoAndPlay("running");
+                    if (ball.image.scaleX > 0){
+                        ball.image.scaleX*= -1;
+                    }
+                    if (ball.platform) {
+                        ball.image.gotoAndPlay("running");
+                    }
                     ball.face = "l";
                 }
                 break;
@@ -258,8 +305,13 @@ function init() {
                     ball.speed[0] += 5;
                    // ball.acc[0] = 1;
                     ball.moving = "r";
-                    ball.image.scaleX = 1;
-                    ball.image.gotoAndPlay("running");
+                    if (ball.image.scaleX < 0){
+                        ball.image.scaleX*= -1;
+                    }
+
+                    if (ball.platform) {
+                        ball.image.gotoAndPlay("running");
+                    }
                     ball.face = "r";
                 }
                 break;
@@ -310,7 +362,9 @@ function init() {
     }
 }
 
+
 function reset(e){
+    e.currentTarget.removeEventListener("click",reset);
     return init();
 }
 
