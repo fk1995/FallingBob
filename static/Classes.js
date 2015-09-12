@@ -25,9 +25,7 @@ Ball = function (x,y) {
             [244,114,27,38],
             [289,116,25,36],
             [329,117,25,35],
-            [368,115,27,37],
-            [125,275,36,36],
-            [166,287,38,36]
+            [368,115,27,37]
 
         ],
         animations: {
@@ -37,14 +35,9 @@ Ball = function (x,y) {
                 speed:0.2
             },
             running:{
-                frames:[9,10,11,12,13,14,15,16,17,18],
+                frames:[9,10,11,12,13,14,15,16,17],
                 next:true,
                 speed:0.2
-            },
-            flying:{
-                frames:[19,20],
-                next:true,
-                speed:0.5
             }
         }
     };
@@ -59,6 +52,7 @@ Ball = function (x,y) {
     this.lastPlatform = null;
     this.moving = false;
     this.face = "r";
+ 	this.health = 100;
 };
 Ball.size = [29,35];
 
@@ -83,7 +77,6 @@ Platform = function(x,y,type){
     this.speed = 0;
     this.range = 0;
     this.counter = 0;
- 	this.health = 100;
 };
 
 Platform.size = [60,10];

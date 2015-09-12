@@ -39,10 +39,11 @@ function init() {
     score_text.x = 10;
 
     var difficulty = 1;
+	var myHealth = Math.floor(ball.health);
     var difficulty_text = new createjs.Text("Level:"+difficulty.toString(),"30px Comic Sans MS","black");
     var difficulty_text_width = difficulty_text.getMeasuredWidth();
     difficulty_text.x = CANVASSIZE[0] - difficulty_text_width;
-
+	var health_text = new createjs.Text("Health:" + myHealth.toString(), "25px Comic Sans MS", "red");
 
     //background
     var background_data = {
@@ -57,6 +58,9 @@ function init() {
     stage.addChild(background2);
     stage.addChild(score_text);
     stage.addChild(difficulty_text);
+	health_text.x = (CANVASSIZE[0] / 2) - 70;
+	stage.addChild(health_text);
+	
     function handleTick(event) {
         // this function is called every tick(every frame loop)
         // main loop
@@ -85,7 +89,6 @@ function init() {
                         ball.speed[0] -= BELTSPEED;
                     }
                     ball.platform = null;
-                    ball.image.gotoAndPlay("flying");
                     ball.speed[1] = 0;
                 }
             }
@@ -152,16 +155,10 @@ function init() {
 
                     ball.lastPlatform = platform;
                     score_text.text = score.toString();
-                    if (ball.moving) {
-                        ball.image.gotoAndPlay("running");
-                    }
-                    else{
-                        ball.image.gotoAndPlay("standing");
-                    }
+
                     switch (platform.kind){
                         case "normal":
                             //ball.speed[0] = 0;
-
                             break;
                         case "bouncing":
                             ball.image.y = ball.platform.image.y - Ball.size[1];
@@ -181,21 +178,33 @@ function init() {
             if (ball.platform != null) {
                 ball.image.y = ball.platform.image.y - Ball.size[1];
                 ball.image.x += ball.platform.speed;
-                if (ball.platform.kind == "transient"){
+                
+                if (ball.platform.kind == "invisible"){
+                    ball.platform.counter += 1;
+                    ball.platform.image.alpha += 1.0/20;
+                }
+				if (ball.platform.kind == "spike") {
+					ball.health -= 1;
+					myHealth = Math.floor(ball.health);
+                    health_text.text = "Health:" + myHealth.toString();
+                    
+				}
+				else{
+					if (ball.health > 0 && ball.health < 100){
+						ball.health += 0.25;
+						myHealth = Math.floor(ball.health);
+						health_text.text = "Health:" + myHealth.toString();
+					}
+				}
+				if (ball.platform.kind == "transient"){
                     ball.platform.counter += 1;
                     ball.platform.image.alpha -= 1.0/20;
                     if (ball.platform.counter == 20){
                         ball.platform.image.alpha = 0;
-
                         var pos = platforms.indexOf(ball.platform);
                         platforms.splice(pos,1);
                         ball.platform = null;
-                        ball.image.gotoAndPlay("flying");
                     }
-                }
-                if (ball.platform.kind == "invisible"){
-                    ball.platform.counter += 1;
-                    ball.platform.image.alpha += 1.0/20;
                 }
             }
 
@@ -208,10 +217,12 @@ function init() {
             background2.y = background1.y +background1.spriteSheet.getFrameBounds(0).height;
             stage.setChildIndex(score_text,stage.getNumChildren()-1);
             stage.setChildIndex(difficulty_text,stage.getNumChildren()-1);
+			stage.setChildIndex(health_text,stage.getNumChildren()-1)
             stage.update();
         }
+		
         if (!GAMEOVER){
-            if (ball.image.y < -Ball.size[1] || ball.image.y > CANVASSIZE[1]){
+            if (ball.health <= 0 || ball.image.y < -Ball.size[1] || ball.image.y > CANVASSIZE[1]){
                 GAMEOVER = true;
                 var deathnote = new createjs.Text("Game Over","30px Arial","#ff0000");
                 deathnote.x = 320 - 75;
@@ -238,9 +249,7 @@ function init() {
                     //ball.acc[0] = -1;
                     ball.moving = "l";
                     ball.image.scaleX = -1;
-                    if (ball.platform) {
-                        ball.image.gotoAndPlay("running");
-                    }
+                    ball.image.gotoAndPlay("running");
                     ball.face = "l";
                 }
                 break;
@@ -250,15 +259,13 @@ function init() {
                    // ball.acc[0] = 1;
                     ball.moving = "r";
                     ball.image.scaleX = 1;
-                    if (ball.platform) {
-                        ball.image.gotoAndPlay("running");
-                    }
+                    ball.image.gotoAndPlay("running");
                     ball.face = "r";
                 }
                 break;
         }
 
-    };
+    }
 
     function jump(e){
         switch (e.keyCode){
@@ -270,7 +277,6 @@ function init() {
                         ball.speed[0] -= BELTSPEED;
                     }
                     ball.platform = null;
-                    ball.image.gotoAndPlay("flying");
                 }
                 break;
         }
@@ -284,12 +290,7 @@ function init() {
                     ball.speed[0] += 5;
                     //ball.acc[0] -= 5;
                     ball.moving = false;
-                    if (ball.platform) {
-                        ball.image.gotoAndPlay("standing");
-                    }
-                    else{
-                        ball.image.gotoAndPlay("flying");
-                    }
+                    ball.image.gotoAndPlay("standing");
                     this.onkeydown = move;
                     this.onkeyup = null;
                 }
@@ -299,12 +300,7 @@ function init() {
                     ball.speed[0] -= 5;
                     //ball.acc[0] += 5;
                     ball.moving = false;
-                    if (ball.platform) {
-                        ball.image.gotoAndPlay("standing");
-                    }
-                    else{
-                        ball.image.gotoAndPlay("flying");
-                    }
+                    ball.image.gotoAndPlay("standing");
                     this.onkeydown = move;
                     this.onkeyup = null;
                 }
