@@ -88,13 +88,7 @@ var Platform;
 Platform = function(x,y,type){
     this.type = "Platform";
     this.kind = type;
-    var data = {
-        images: ["static/platform-" + this.kind + ".png"],
-        frames: {width:60, height:15}
-    };
-
-    this.spritesheet = new createjs.SpriteSheet(data);
-    this.image = new createjs.Sprite(this.spritesheet);
+    this.image = new createjs.Bitmap("static/platform-" + this.kind + ".png");
     if (this.kind == "invisible"){
         this.image.alpha = 0.02;
     }
@@ -114,13 +108,8 @@ var Item;
 Item = function(platform,type){
     this.type = "Item";
     this.kind = type;
-    var data = {
-        images: ["static/item-" + this.kind + ".png"],
-        frames: {width:30, height:28}
-    };
-    this.spritesheet = new createjs.SpriteSheet(data);
-    this.image = new createjs.Sprite(this.spritesheet);
-    this.image.regX = data.frames.width /2;
+    this.image = new createjs.Bitmap("static/item-" + this.kind + ".png");
+    this.image.regX = this.image.getBounds().width /2;
     this.platform = platform;
     this.image.x = this.platform.image.x + Platform.size[0]/2;
 };
