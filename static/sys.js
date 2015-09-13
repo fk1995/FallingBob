@@ -99,6 +99,17 @@ function init() {
 
     stage.addChild(pause_button);
 
+    var music_button_data = {
+        images: ["static/music.png"],
+        frames: {width:34, height:31}
+    };
+    var music_button_spsheet = new createjs.SpriteSheet(music_button_data);
+    var music_button = new createjs.Sprite(music_button_spsheet);
+    music_button.addEventListener("click",mute);
+    music_button.x = CANVASSIZE[0] - 68;
+    music_button.y = CANVASSIZE[1] - 31;
+
+    stage.addChild(music_button);
 
 
     if (localStorage.records == undefined){
@@ -451,6 +462,7 @@ function init() {
                 stage.setChildIndex(heart_text, stage.getNumChildren() - 1);
                 stage.setChildIndex(itemback, stage.getNumChildren() - 1);
                 stage.setChildIndex(pause_button, stage.getNumChildren() - 1);
+                stage.setChildIndex(music_button, stage.getNumChildren() - 1);
                 if (ball.status != null) {
                     stage.setChildIndex(ball.status.image, stage.getNumChildren() - 1);
                     ball.status.image.alpha = Math.sin(ball.counter / 200.0 * Math.PI / 2);
@@ -642,3 +654,7 @@ function reset(e){
     return init();
 }
 
+
+function mute(e){
+    createjs.Sound.muted = !createjs.Sound.muted;
+}
