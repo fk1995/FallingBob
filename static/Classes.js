@@ -3,7 +3,7 @@
  */
 
 var BELTSPEED = 3;
-
+var Theme = "Theme3";
 var Ball;
 Ball = function (x,y) {
     this.type = "Ball";
@@ -97,7 +97,7 @@ Platform = function(x,y,type){
     this.type = "Platform";
     this.kind = type;
     var data = {
-        images: ["static/platform-" + this.kind + ".png"],
+        images: ["static/"+ Theme +"/platform-" + this.kind + ".png"],
         frames: {width:60, height:15}
     };
 
@@ -134,3 +134,7 @@ Item = function(platform,type){
 };
 
 Item.size = [30,28];
+
+function setTheme(theme){
+    Theme = "Theme" + theme.toString();
+}

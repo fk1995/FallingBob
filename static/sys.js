@@ -22,7 +22,6 @@ function init() {
     var SCROLLSPEED = 4;
     var GRAVITY = 1;
     var stage = new createjs.Stage("Canvas");
-
     var move;
     // set ticker function
     createjs.Ticker.addEventListener("tick", handleTick);
@@ -56,7 +55,7 @@ function init() {
     
     //background
     var background_data = {
-        images: ["static/background13.jpg"],
+        images: ["static/"+Theme+"/background.jpg"],
         frames: {width:640, height:960}
     };
 
@@ -403,28 +402,34 @@ function init() {
                             records.third.score = score;
                         }
                         else if (score < records.first.score){
+                            records.third.name = records.second.name;
+                            records.third.score = records.second.score;
                             records.second.name = name;
                             records.second.score = score;
                         }
                         else{
+                            records.third.name = records.second.name;
+                            records.third.score = records.second.score;
+                            records.second.name = records.first.name;
+                            records.second.score = records.first.score;
                             records.first.name = name;
                             records.first.score = score;
                         }
                         localStorage.records = JSON.stringify(records);
                     }
-                    var highscore_text = new createjs.Text("Highscore","40px Comic Sans MS","white");
+                    var highscore_text = new createjs.Text("Highscore","bold 40px Comic Sans MS","white");
                     highscore_text.x = 320-100;
                     highscore_text.y = 360;
                     stage.addChild(highscore_text);
-                    var highscore1_text = new createjs.Text("1." + records.first.name + ":" + records.first.score.toString(),"30px Comic Sans MS","white");
+                    var highscore1_text = new createjs.Text("1. " + records.first.name + ":" + records.first.score.toString(),"30px Comic Sans MS","white");
                     highscore1_text.x = 320-highscore1_text.getMeasuredWidth()/2;
                     highscore1_text.y = 430;
                     stage.addChild(highscore1_text);
-                    var highscore2_text = new createjs.Text("2." + records.second.name + ":" + records.second.score.toString(),"30px Comic Sans MS","white");
+                    var highscore2_text = new createjs.Text("2. " + records.second.name + ":" + records.second.score.toString(),"30px Comic Sans MS","white");
                     highscore2_text.x = 320-highscore2_text.getMeasuredWidth()/2;
                     highscore2_text.y = 470;
                     stage.addChild(highscore2_text);
-                    var highscore3_text = new createjs.Text("3." + records.third.name + ":" + records.third.score.toString(),"30px Comic Sans MS","white");
+                    var highscore3_text = new createjs.Text("3. " + records.third.name + ":" + records.third.score.toString(),"30px Comic Sans MS","white");
                     highscore3_text.x = 320-highscore3_text.getMeasuredWidth()/2;
                     highscore3_text.y = 510;
                     stage.addChild(highscore3_text);
@@ -441,7 +446,7 @@ function init() {
         switch (e.keyCode){
             // decide the direction of movement
             case (KEYLEFT):
-                if (!ball.moving) {
+                if (!ball.moving && !createjs.Ticker.paused) {
                     ball.speed[0] -= Ball.speed;
                     //ball.acc[0] = -1;
                     ball.moving = "l";
@@ -455,7 +460,7 @@ function init() {
                 }
                 break;
             case (KEYRIGHT):
-                if (!ball.moving) {
+                if (!ball.moving && !createjs.Ticker.paused) {
                     ball.speed[0] += Ball.speed;
                    // ball.acc[0] = 1;
                     ball.moving = "r";
@@ -476,7 +481,7 @@ function init() {
         switch (e.keyCode){
             // decide the direction of movement
             case (KEYSPACE):
-                if (ball.platform != null) {
+                if (ball.platform != null && !createjs.Ticker.paused) {
                     ball.speed[1] = 14;
                     if (ball.platform.kind == "rolling"){
                         ball.speed[0] -= BELTSPEED;
@@ -492,7 +497,7 @@ function init() {
         switch (e.keyCode){
             // decide the direction of movement
             case (KEYLEFT):
-                if (ball.moving == "l") {
+                if (ball.moving == "l" && !createjs.Ticker.paused) {
                     ball.speed[0] += Ball.speed;
                     //ball.acc[0] -= 5;
                     ball.moving = false;
@@ -507,7 +512,7 @@ function init() {
                 }
                 break;
             case (KEYRIGHT):
-                if (ball.moving == "r") {
+                if (ball.moving == "r" && !createjs.Ticker.paused) {
                     ball.speed[0] -= Ball.speed;
                     //ball.acc[0] += 5;
                     ball.moving = false;
@@ -526,6 +531,7 @@ function init() {
     }
 
     function pause(e){
+        console.log(1);
         if (!createjs.Ticker.paused){
             pause_button.gotoAndStop(1);
             stage.update();
@@ -542,6 +548,7 @@ function init() {
 
 function reset(e){
     e.currentTarget.removeEventListener("click",reset);
+    e.currentTarget.stage.removeAllChildren();
     return init();
 }
 
