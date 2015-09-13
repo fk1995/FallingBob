@@ -147,7 +147,7 @@ function init() {
                 platforms.push(new Platform(Math.random() * (CANVASSIZE[0]-Platform.size[0]), CANVASSIZE[1],
                     PLATFORMS[Math.floor(Math.random()*PLATFORMS.length)]));
                 stage.addChild(platforms.slice(-1)[0].image);
-                if ( platforms.slice(-1)[0].kind != "invisible" && Math.random() < 0.5){
+                if (platforms.slice(-1)[0].kind != "invisible" && Math.random() < 0.5){
                     items.push(new Item(platforms.slice(-1)[0],ITEMS[Math.floor(Math.random()*ITEMS.length)]));
                     stage.addChild(items.slice(-1)[0].image);
                 }
@@ -238,8 +238,7 @@ function init() {
                     ball.status.image.x = 20;
                     ball.status.image.y = CANVASSIZE[1] - 33;
                     stage.addChild(ball.status.image);
-                    switch (item.kind){
-                        case "burger":
+                    if (item.kind == "burger") {
                             if (ball.image.scaleX == 1 || ball.image.scaleX == -1) {
                                 createjs.Tween.get(ball.image).to({scaleX:ball.image.scaleX*1.35,scaleY:ball.image.scaleY*1.35},300);
                                 //ball.image.scaleX *= 1.35;
@@ -249,15 +248,17 @@ function init() {
                             }
 
                             ball.counter = 200;
-                            break;
-                        case "shoes":
+					}
+					else if (item.kind == "shoes") {
+                        
                             Ball.speed = 8;
                             if (ball.moving){
                                 ball.speed[0] = Math.abs(ball.speed[0]) / ball.speed[0] * Ball.speed;
                             }
                             ball.counter = 200;
-                            break;
                     }
+					
+					
                     continue;
                 }
 
