@@ -607,7 +607,7 @@ function init() {
         switch (e.keyCode){
             // decide the direction of movement
             case (KEYLEFT):
-                if (ball.moving == "l" && !createjs.Ticker.paused) {
+                if (ball.moving == "l") {
                     ball.speed[0] += Ball.speed;
                     //ball.acc[0] -= 5;
                     ball.moving = false;
@@ -622,7 +622,7 @@ function init() {
                 }
                 break;
             case (KEYRIGHT):
-                if (ball.moving == "r" && !createjs.Ticker.paused) {
+                if (ball.moving == "r") {
                     ball.speed[0] -= Ball.speed;
                     //ball.acc[0] += 5;
                     ball.moving = false;
