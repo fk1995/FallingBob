@@ -4,7 +4,7 @@ Created by: Kai Fang, Yunqi Wang, Dang Ying
 University of Michigan     
 #######################################
 
-Keys:
+Keys:     
 Z: Mute/Unmute     
 X: Pause/Resume     
 Space: Hop     
