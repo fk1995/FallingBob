@@ -13,7 +13,7 @@ Keys:
 Z: Mute/Unmute     
 X: Pause/Resume     
 Space: Hop     
----- ↑↓←→: Control Directions     
+↑↓←→: Control Directions     
 
 #######################################     
 
