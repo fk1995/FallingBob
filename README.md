@@ -1,7 +1,7 @@
 # A web game: FallingBob
-# Version 1.0
-# Created by: Kai Fang, Yunqi Wang, Dang Ying
-# University of Michigan
+Version 1.0
+Created by: Kai Fang, Yunqi Wang, Dang Ying
+University of Michigan
 #######################################
 
 
