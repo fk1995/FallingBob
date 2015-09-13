@@ -1,6 +1,9 @@
 /**
- * Created by fangkai on 2015/9/9.
+ * Created by fangkai on 2015/9/12.
  */
+
+var BELTSPEED = 3;
+var Theme = "Theme3";
 var Ball;
 Ball = function (x,y) {
     this.type = "Ball";
@@ -76,7 +79,12 @@ Ball.prototype.cancelStatus = function(){
         case "shoes":
             Ball.speed = 5;
             if (this.moving){
-                this.speed[0] = Math.abs(this.speed[0]) / this.speed[0] * Ball.speed;
+                if (this.platform!= null && this.platform.kind == "rolling"){
+                    this.speed[0] = Math.abs(this.speed[0]) / this.speed[0] * Ball.speed + BELTSPEED;
+                }
+                else {
+                    this.speed[0] = Math.abs(this.speed[0]) / this.speed[0] * Ball.speed;
+                }
             }
             this.counter = 0;
             break;
@@ -88,7 +96,13 @@ var Platform;
 Platform = function(x,y,type){
     this.type = "Platform";
     this.kind = type;
-    this.image = new createjs.Bitmap("static/platform-" + this.kind + ".png");
+    var data = {
+        images: ["static/"+ Theme +"/platform-" + this.kind + ".png"],
+        frames: {width:60, height:15}
+    };
+
+    this.spritesheet = new createjs.SpriteSheet(data);
+    this.image = new createjs.Sprite(this.spritesheet);
     if (this.kind == "invisible"){
         this.image.alpha = 0.02;
     }
@@ -108,10 +122,19 @@ var Item;
 Item = function(platform,type){
     this.type = "Item";
     this.kind = type;
-    this.image = new createjs.Bitmap("static/item-" + this.kind + ".png");
-    this.image.regX = this.image.getBounds().width /2;
+    var data = {
+        images: ["static/item-" + this.kind + ".png"],
+        frames: {width:30, height:28}
+    };
+    this.spritesheet = new createjs.SpriteSheet(data);
+    this.image = new createjs.Sprite(this.spritesheet);
+    this.image.regX = data.frames.width /2;
     this.platform = platform;
     this.image.x = this.platform.image.x + Platform.size[0]/2;
 };
 
 Item.size = [30,28];
+
+function setTheme(theme){
+    Theme = "Theme" + theme.toString();
+}
