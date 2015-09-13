@@ -12,11 +12,18 @@ var MAXSCROLLSPEED = 7;
 var MAXGRAVITY = 2;
 var BELTSPEED = 3;
 var PLATFORMS = ["normal","bouncing","rolling","normal","bouncing","rovering","transient","invisible","spike"];
-var ITEMS= ["shoes"];
+var ITEMS= ["shoes","burger"];
 var CANVASSIZE = [640,630];
 
 
 function init() {
+    var url = window.location.href;
+    var len = url.length;
+    var offset = url.indexOf("?");
+    if (offset != -1){
+        var str = url.substr(offset, len);
+        Theme = "Theme"+str.split("=")[1];
+    }
     // create stage object. It will be the closure where we set our other objects.
     var GAMEOVER = false;
     var SCROLLSPEED = 4;
@@ -261,7 +268,7 @@ function init() {
                     platforms.push(new Platform(Math.random() * (CANVASSIZE[0] - Platform.size[0]), CANVASSIZE[1],
                         PLATFORMS[Math.floor(Math.random() * PLATFORMS.length)]));
                     stage.addChild(platforms.slice(-1)[0].image);
-                    if (platforms.slice(-1)[0].kind != "invisible" && Math.random() < 0.5) {
+                    if (platforms.slice(-1)[0].kind != "invisible" && Math.random() < 0.05) {
                         items.push(new Item(platforms.slice(-1)[0], ITEMS[Math.floor(Math.random() * ITEMS.length)]));
                         stage.addChild(items.slice(-1)[0].image);
                     }
@@ -468,7 +475,7 @@ function init() {
                     //retry.x = 320 - 46;
                     retry.y = 240 + 45;
                     retry.addEventListener("click", reset);
-                    createjs.Tween.get(retry).to({x:320-46},300,createjs.Ease.bounceInOut)
+                    createjs.Tween.get(retry).to({x:320-46},300,createjs.Ease.bounceInOut);
                     stage.addChild(retry);
                     highscore_bg.x =320 - 200;
                     highscore_bg.y = 350;

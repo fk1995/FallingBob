@@ -3,7 +3,7 @@
  */
 
 var BELTSPEED = 3;
-var Theme = "Theme3";
+var Theme = "Theme" + (Math.floor(Math.random()*3)+1).toString();
 var Ball;
 Ball = function (x,y) {
     this.type = "Ball";
@@ -130,7 +130,7 @@ Item = function(platform,type){
     this.type = "Item";
     this.kind = type;
     var data = {
-        images: ["static/item-" + this.kind + ".png"],
+        images: ["static/"+ Theme +"/item-" + this.kind + ".png"],
         frames: {width:30, height:28}
     };
     this.spritesheet = new createjs.SpriteSheet(data);

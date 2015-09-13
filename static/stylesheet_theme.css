@@ -156,3 +156,8 @@ html{
 	text-decoration: none;
 	cursor:pointer;
 }
+
+.theme{
+	margin-left:50px;
+	margin-top:50px;
+}
