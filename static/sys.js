@@ -276,7 +276,7 @@ function init() {
                 }
 
 
-                var tick = createjs.Ticker.getTicks();
+                var tick = createjs.Ticker.getTicks(true);
                 if (tick % 24 == 1) {
                     platforms.push(new Platform(Math.random() * (CANVASSIZE[0] - Platform.size[0]), CANVASSIZE[1],
                         PLATFORMS[Math.floor(Math.random() * PLATFORMS.length)]));
