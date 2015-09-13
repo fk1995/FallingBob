@@ -11,11 +11,12 @@ var MAXHORIZONTALSPEED = 10;
 var MAXSCROLLSPEED = 7;
 var MAXGRAVITY = 2;
 var BELTSPEED = 3;
-var PLATFORMS = ["normal","bouncing","rolling","normal","bouncing","rovering","transient","invisible","spike"];
+var PLATFORMS = ["normal","bouncing","rolling","rovering","transient","spike","invisible","rovering","normal","transient"];
 var ITEMS= ["shoes","burger"];
 var CANVASSIZE = [640,630];
 
 createjs.Sound.registerSound("static/jumpSound.wav","jump");
+createjs.Sound.registerSound("static/death_sound2.wav","death");
 
 function init() {
     var url = window.location.href;
@@ -100,7 +101,7 @@ function init() {
     stage.addChild(pause_button);
 
     var music_button_data = {
-        images: ["static/music.png"],
+        images: ["static/music.png","static/mute.png"],
         frames: {width:34, height:31}
     };
     var music_button_spsheet = new createjs.SpriteSheet(music_button_data);
@@ -225,6 +226,7 @@ function init() {
         stage.update();
         // this function is called every tick(every frame loop)
         // main loop
+        this.onkeydown = move;
         if (!event.paused) {
             stage.addChild(ball.image);
             if (ball.counter != 0) {
@@ -235,7 +237,6 @@ function init() {
                 }
 
             }
-            this.onkeydown = move;
             this.onkeypress = jump;
             if (!GAMEOVER) {
                 if (ball.platform == null) {
@@ -478,6 +479,7 @@ function init() {
                         createjs.Tween.get(ball.image).to({y:ball.image.y - 20,alpha:0},800)
                     }
                     GAMEOVER = true;
+                    createjs.Sound.play("death",{interrupt: createjs.Sound.INTERRUPT_ANY});
                     var gameover_logo = new createjs.Bitmap("static/game-over.png");
                     var retry =  new createjs.Bitmap("static/retry.png");
                     var highscore_bg = new createjs.Bitmap("static/highscore_bg.png");
@@ -574,6 +576,12 @@ function init() {
                     ball.face = "r";
                 }
                 break;
+            case (90):
+                mute({currentTarget:music_button});
+                break;
+            case (88):
+                pause({currentTarget:pause_button})
+                break;
         }
 
     };
@@ -633,7 +641,6 @@ function init() {
     }
 
     function pause(e){
-        console.log(1);
         if (!createjs.Ticker.paused){
             pause_button.gotoAndStop(1);
             stage.update();
@@ -657,4 +664,10 @@ function reset(e){
 
 function mute(e){
     createjs.Sound.muted = !createjs.Sound.muted;
+    if (createjs.Sound.muted){
+        e.currentTarget.gotoAndStop(1);
+    }
+    else{
+        e.currentTarget.gotoAndStop(0);
+    }
 }
