@@ -12,7 +12,7 @@ var MAXSCROLLSPEED = 7;
 var MAXGRAVITY = 2;
 var BELTSPEED = 3;
 var PLATFORMS = ["normal","bouncing","rolling","normal","bouncing","rovering","transient","invisible","spike"];
-var ITEMS= ["burger","shoes"];
+var ITEMS= ["shoes"];
 var CANVASSIZE = [640,675];
 
 
@@ -94,7 +94,44 @@ function init() {
     pause_button.y = CANVASSIZE[1] - 31;
 
     stage.addChild(pause_button);
+
+
+
+    if (localStorage.records == undefined){
+        var records = {
+            first: {
+                name: "Bob",
+                score: 80
+            },
+            second:{
+                name:"Patrick",
+                score:50
+            },
+            third:{
+                name:"Mr. Crabs",
+                score:30
+            }
+        };
+        localStorage.records = JSON.stringify(records);
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     function handleTick(event) {
+
+        stage.update();
         // this function is called every tick(every frame loop)
         // main loop
         if (!event.paused) {
@@ -157,7 +194,7 @@ function init() {
                         stage.addChild(items.slice(-1)[0].image);
                     }
                     if (platforms.slice(-1)[0].kind == "rovering") {
-                        platforms.slice(-1)[0].speed = 3 + Math.floor(Math.random() * 3);
+                        platforms.slice(-1)[0].speed = 2 + Math.floor(Math.random() * 2);
                         platforms.slice(-1)[0].range = 70 + Math.floor(Math.random() * 60);
                     }
                 }
@@ -261,7 +298,12 @@ function init() {
                             case "shoes":
                                 Ball.speed = 8;
                                 if (ball.moving) {
-                                    ball.speed[0] = Math.abs(ball.speed[0]) / ball.speed[0] * Ball.speed;
+                                    if (ball.platform== null || ball.platform.kind != "rolling") {
+                                        ball.speed[0] = Math.abs(ball.speed[0]) / ball.speed[0] * Ball.speed;
+                                    }
+                                    else {
+                                        ball.speed[0] = Math.abs(ball.speed[0]) / ball.speed[0] * Ball.speed + BELTSPEED;
+                                    }
                                 }
                                 ball.counter = 200;
                                 break;
@@ -281,7 +323,9 @@ function init() {
                         ball.platform.image.alpha += 1.0 / 20;
                     }
                     if (ball.platform.kind == "spike") {
-                        ball.health -= 1;
+                        if (ball.health > 0) {
+                            ball.health -= 1;
+                        }
                         myHealth = Math.floor(ball.health);
                         health_text.text = "Health:" + myHealth.toString();
 
@@ -330,20 +374,61 @@ function init() {
                     stage.setChildIndex(ball.status.image, stage.getNumChildren() - 1);
                     ball.status.image.alpha = Math.sin(ball.counter / 200.0 * Math.PI / 2);
                 }
-                stage.update();
             }
             if (!GAMEOVER) {
                 if (ball.health <= 0 || ball.image.y < -Ball.size[1] || ball.image.y > CANVASSIZE[1]) {
                     GAMEOVER = true;
-                    var deathnote = new createjs.Text("Game Over", "30px Geogria", "#ff0000");
-                    deathnote.x = 320 - 75;
-                    deathnote.y = 240 - 15;
-                    stage.addChild(deathnote);
-                    var retry = new createjs.Text("Retry", "20px Arial", "purple");
-                    retry.x = 320 - 25;
+                    var gameover_logo = new createjs.Bitmap("static/game-over.png");
+                    var retry =  new createjs.Bitmap("static/retry.png");
+                    var highscore_bg = new createjs.Bitmap("static/highscore_bg.png");
+                    gameover_logo.x = 320 - 175;
+                    createjs.Tween.get(gameover_logo).to({y:240 - 38},300,createjs.Ease.bounceOut);
+
+                    //gameover_logo.y = 240 - 38;
+                    stage.addChild(gameover_logo);
+                    //retry.x = 320 - 46;
                     retry.y = 240 + 45;
                     retry.addEventListener("click", reset);
+                    createjs.Tween.get(retry).to({x:320-46},300,createjs.Ease.bounceInOut)
                     stage.addChild(retry);
+                    highscore_bg.x =320 - 200;
+                    highscore_bg.y = 350;
+                    stage.addChild(highscore_bg);
+                    var records = JSON.parse(localStorage.records);
+                    if (score > records.third.score){
+                        alert("New Highscore!");
+                        var name = prompt("What's your name?");
+                        if (score <  records.second.score){
+                            records.third.name = name;
+                            records.third.score = score;
+                        }
+                        else if (score < records.first.score){
+                            records.second.name = name;
+                            records.second.score = score;
+                        }
+                        else{
+                            records.first.name = name;
+                            records.first.score = score;
+                        }
+                        localStorage.records = JSON.stringify(records);
+                    }
+                    var highscore_text = new createjs.Text("Highscore","40px Comic Sans MS","white");
+                    highscore_text.x = 320-100;
+                    highscore_text.y = 360;
+                    stage.addChild(highscore_text);
+                    var highscore1_text = new createjs.Text("1." + records.first.name + ":" + records.first.score.toString(),"30px Comic Sans MS","white");
+                    highscore1_text.x = 320-highscore1_text.getMeasuredWidth()/2;
+                    highscore1_text.y = 430;
+                    stage.addChild(highscore1_text);
+                    var highscore2_text = new createjs.Text("2." + records.second.name + ":" + records.second.score.toString(),"30px Comic Sans MS","white");
+                    highscore2_text.x = 320-highscore2_text.getMeasuredWidth()/2;
+                    highscore2_text.y = 470;
+                    stage.addChild(highscore2_text);
+                    var highscore3_text = new createjs.Text("3." + records.third.name + ":" + records.third.score.toString(),"30px Comic Sans MS","white");
+                    highscore3_text.x = 320-highscore3_text.getMeasuredWidth()/2;
+                    highscore3_text.y = 510;
+                    stage.addChild(highscore3_text);
+
                     stage.update();
                 }
             }
