@@ -13,7 +13,7 @@ var MAXGRAVITY = 2;
 var BELTSPEED = 3;
 var PLATFORMS = ["normal","bouncing","rolling","normal","bouncing","rovering","transient","invisible","spike"];
 var ITEMS= ["shoes"];
-var CANVASSIZE = [640,675];
+var CANVASSIZE = [640,630];
 
 
 function init() {
@@ -38,20 +38,18 @@ function init() {
     ball.platform = platforms[0];
     ball.lastPlatform = platforms[0];
 
-    var score = 0;
-    var score_text = new createjs.Text(score.toString(),"30px Courier New","#FE9A2E");
+    var score = 0
    
 
-    score_text.x = 10;
 
     var difficulty = 1;
-    var difficulty_text = new createjs.Text("Level:"+difficulty.toString(),"30px Courier New","#FE9A2E");
+    var difficulty_text = new createjs.Text("Level:"+difficulty.toString(),"bold 30px Courier New","#FE9A2E");
 
     var difficulty_text_width = difficulty_text.getMeasuredWidth();
     difficulty_text.x = CANVASSIZE[0] - difficulty_text_width;
-
+    difficulty_text.y = 5;
     var myHealth = Math.floor(ball.health);
-    var health_text = new createjs.Text("Health:" + myHealth.toString(), "25px Comic Sans MS", "red");
+    //var health_text = new createjs.Text("Health", "25px Comic Sans MS", "red");
     
     //background
     var background_data = {
@@ -65,7 +63,6 @@ function init() {
     var background2 = new createjs.Sprite(background2_spsheet);
     stage.addChild(background1);
     stage.addChild(background2);
-    stage.addChild(score_text);
     stage.addChild(difficulty_text);
     var itemback_data = {
         images: ["static/item_back.png"],
@@ -76,8 +73,8 @@ function init() {
     itemback.regY = 40;
     itemback.y = CANVASSIZE[1];
     stage.addChild(itemback);
-	health_text.x = (CANVASSIZE[0] / 2) - 70;
-	stage.addChild(health_text);
+	//health_text.x = (CANVASSIZE[0] / 2) - 50;
+	//stage.addChild(health_text);
     for (var p in platforms){
         stage.addChild(platforms[p].image);
     }
@@ -113,11 +110,87 @@ function init() {
         };
         localStorage.records = JSON.stringify(records);
     }
+    var number_data = {
+        images:["static/hud_0.png",
+            "static/hud_1.png",
+            "static/hud_2.png",
+            "static/hud_3.png",
+            "static/hud_4.png",
+            "static/hud_5.png",
+            "static/hud_6.png",
+            "static/hud_7.png",
+            "static/hud_8.png",
+            "static/hud_9.png"
+        ],
+        frames:[
+            [0,0,30,38],
+            [0,0,26,37,1],
+            [0,0,32,38,2],
+            [0,0,28,38,3],
+            [0,0,29,38,4],
+            [0,0,28,38,5],
+            [0,0,30,38,6],
+            [0,0,32,39,7],
+            [0,0,32,40,8],
+            [0,0,32,39,9]
+        ],
+        animations:{
+            "0":0,
+            "1":1,
+            "2":2,
+            "3":3,
+            "4":4,
+            "5":5,
+            "6":6,
+            "7":7,
+            "8":8,
+            "9":9
 
 
+        }
+    };
+    var number_spritesheet = new createjs.SpriteSheet(number_data);
+    var number_text = new createjs.BitmapText(score.toString(),number_spritesheet);
+    number_text.y = 2;
+    stage.addChild(number_text);
 
 
-
+    var heart_data = {
+        images:["static/hud_heartEmpty.png",
+            "static/hud_heartHalf.png",
+            "static/hud_heartFull.png"
+        ],
+        frames:[
+            [0,0,30,25],
+            [0,0,30,25,1],
+            [0,0,30,25,2]
+        ],
+        animations:{
+            "0":0,
+            "1":1,
+            "2":2
+        }
+    };
+    var heart_spritesheet = new createjs.SpriteSheet(heart_data);
+    var heart_text = new createjs.BitmapText(getHeartString(ball.health),heart_spritesheet);
+    stage.addChild(heart_text);
+    heart_text.x = 320-80;
+    heart_text.y= 10;
+    function getHeartString(health){
+        var s = "";
+        while(health >= 20){
+            health -= 20;
+            s += "2";
+        }
+        if (health >= 10){
+            health -= 10;
+            s += "1";
+        }
+        while (s.length < 5){
+            s += "0";
+        }
+        return s;
+    }
 
 
 
@@ -239,7 +312,7 @@ function init() {
                         }
 
                         ball.lastPlatform = platform;
-                        score_text.text = score.toString();
+
                         if (ball.moving) {
                             ball.image.gotoAndPlay("running");
                         }
@@ -326,14 +399,14 @@ function init() {
                             ball.health -= 1;
                         }
                         myHealth = Math.floor(ball.health);
-                        health_text.text = "Health:" + myHealth.toString();
+                        //health_text.text = "Health";
 
                     }
                     else {
                         if (ball.health > 0 && ball.health < 100) {
                             ball.health += 0.25;
                             myHealth = Math.floor(ball.health);
-                            health_text.text = "Health:" + myHealth.toString();
+                            //health_text.text = "Health" ;
                         }
                     }
                     if (ball.platform.kind == "transient") {
@@ -364,15 +437,18 @@ function init() {
 
                 background1.y -= SCROLLSPEED;
                 background2.y = background1.y + 960;
-                stage.setChildIndex(score_text, stage.getNumChildren() - 1);
                 stage.setChildIndex(difficulty_text, stage.getNumChildren() - 1);
-                stage.setChildIndex(health_text, stage.getNumChildren() - 1);
+                //stage.setChildIndex(health_text, stage.getNumChildren() - 1);
+                stage.setChildIndex(heart_text, stage.getNumChildren() - 1);
                 stage.setChildIndex(itemback, stage.getNumChildren() - 1);
                 stage.setChildIndex(pause_button, stage.getNumChildren() - 1);
                 if (ball.status != null) {
                     stage.setChildIndex(ball.status.image, stage.getNumChildren() - 1);
                     ball.status.image.alpha = Math.sin(ball.counter / 200.0 * Math.PI / 2);
                 }
+
+                number_text.text = score.toString();
+                heart_text.text = getHeartString(ball.health);
             }
             if (!GAMEOVER) {
                 if (ball.health <= 0 || ball.image.y < -Ball.size[1] || ball.image.y > CANVASSIZE[1]) {
