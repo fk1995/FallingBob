@@ -184,7 +184,7 @@ function init() {
                         if (platform != ball.lastPlatform) {
                             switch (platform.kind) {
                                 case "invisible":
-                                    score += 2;
+                                    score += 3;
                                     break;
                                 default :
                                     score += 1;
