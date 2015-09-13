@@ -4,13 +4,11 @@ Created by: Kai Fang, Yunqi Wang, Dang Ying
 University of Michigan
 #######################################
 
-
-
 Keys:
-Z: Mute/Unmute
-X: Pause/Resume
-Space: Hop
-↑↓←→: Control Directions
+---- Z: Mute/Unmute
+---- X: Pause/Resume
+---- Space: Hop
+---- ↑↓←→: Control Directions
 
 #######################################
 
