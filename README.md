@@ -4,6 +4,9 @@ Created by: Kai Fang, Yunqi Wang, Dang Ying
 University of Michigan     
 #######################################     
 
+Go to this webpage to play the game!     
+http://www-personal.umich.edu/~fangkai/FallingBob/index.html     
+
 Keys:     
 Z: Mute/Unmute     
 X: Pause/Resume     
