@@ -376,6 +376,10 @@ function init() {
             }
             if (!GAMEOVER) {
                 if (ball.health <= 0 || ball.image.y < -Ball.size[1] || ball.image.y > CANVASSIZE[1]) {
+                    if (ball.health <= 0){
+                        ball.image.gotoAndStop(21);
+                        createjs.Tween.get(ball.image).to({y:ball.image.y - 20,alpha:0},800)
+                    }
                     GAMEOVER = true;
                     var gameover_logo = new createjs.Bitmap("static/game-over.png");
                     var retry =  new createjs.Bitmap("static/retry.png");
@@ -548,7 +552,7 @@ function init() {
 
 function reset(e){
     e.currentTarget.removeEventListener("click",reset);
-    e.currentTarget.stage.removeAllChildren();
+    e.currentTarget.parent.removeAllChildren();
     return init();
 }
 
