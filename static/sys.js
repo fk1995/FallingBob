@@ -15,6 +15,7 @@ var PLATFORMS = ["normal","bouncing","rolling","normal","bouncing","rovering","t
 var ITEMS= ["shoes","burger"];
 var CANVASSIZE = [640,630];
 
+createjs.Sound.registerSound("static/jumpSound.wav","jump");
 
 function init() {
     var url = window.location.href;
@@ -335,6 +336,7 @@ function init() {
                                 ball.image.y = ball.platform.image.y - Ball.size[1];
                                 ball.speed[1] = 13.5;
                                 ball.platform = null;
+                                createjs.Sound.play("jump",{interrupt: createjs.Sound.INTERRUPT_ANY});
                                 ball.image.gotoAndPlay("flying");
                                 break;
                             case "rolling":
@@ -574,6 +576,7 @@ function init() {
                         ball.speed[0] -= BELTSPEED;
                     }
                     ball.platform = null;
+                    createjs.Sound.play("jump",{interrupt: createjs.Sound.INTERRUPT_ANY});
                     ball.image.gotoAndPlay("flying");
                 }
                 break;
