@@ -81,7 +81,7 @@ Ball.prototype.cancelStatus = function(){
             this.counter = 0;
             break;
     }
-}
+};
 
 
 var Platform;
