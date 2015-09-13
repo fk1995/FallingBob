@@ -24,7 +24,7 @@ Otherwise, the wonderland/scene can be chosen if you go to "Choose Theme".
 #######################################     
 
 What he needs to do right now is keep jumping and moving to avoid hitting the roof or falling to the bottom.     
-He also has to keep his health above 0 to be alive.     
+He also has to keep his health above 0 to survive.     
 He can jump from platform to platform to prevent him from falling to the bottom and hitting the roof.     
 
 #######################################     
@@ -35,7 +35,7 @@ There is a roving platform that can moves Sponge Bob to the right side.
 There is a transient platform that if Bob stands on it long enough, it will disappear and Sponge Bob will fall down.     
 There is a invisible platform that only if Bob falls onto it will it appear.     
 There is a dangerous platform where Bob will keep losing health when Bobs stands on those platforms.     
-However, if Bob stands on other platforms, Bob can get health.     
+However, if Bob stands on other platforms, Bob can regain health.     
 			
 #######################################	     	
 Bob's health is shown at the upper middle.     
